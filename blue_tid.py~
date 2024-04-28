@@ -1,0 +1,34 @@
+'''
+Compute a record id for bluesky social that is TID compliant
+(time-based record id,
+https://github.com/bluesky-social/atproto/discussions/1910
+https://github.com/bluesky-social/atproto/discussions/2387
+https://play.golang.com/p/imLamcQJ4Id)
+
+'''
+
+import time
+import math
+import numpy as np
+
+
+# epoch time part
+
+u_time_now = time.time()
+
+u_time_micros = math.trunc (u_time_now * (10**6))
+
+t_part = np.uint64(u_time_micros)
+print (u_time_now, u_time_micros, t_part)
+
+
+mask_zero = np.uint64(0)
+
+print (mask_zero & t_part)
+
+# 10 bit part is max val of 1024
+
+
+
+
+

@@ -1,0 +1,33 @@
+import time
+import math
+
+class bsky_tid_obj:
+    ''' tid
+    '''
+    MAX_TS = 0b11111111111111111111111111111111111111111111111111111
+    MAX_CI = 0b1111111111
+    MAX_TID      = 0b0111111111111111111111111111111111111111111111111111111111111111
+    OVER_MAX_TID = 0b1111111111111111111111111111111111111111111111111111111111111111
+    FIRST_BIT = 0b0
+    obj_seq = 0
+    
+    def __init__(self):
+        '''
+        '''
+        
+        
+    
+    def print_max(self):
+        epoch_fracSeconds = time.time()
+        epoch_uSeconds = math.trunc (time.time() * (10**6))
+
+        self.obj_seq = self.obj_seq +1
+        print ("foo talks:", self.MAX_TS)
+        print (epoch_fracSeconds)
+        print (epoch_uSeconds)
+        print (self.obj_seq)
+        
+        return
+    
+
+
