@@ -60,12 +60,12 @@ def bsky_convert2_b32 (TID_raw64bit_int):
 
     for i in b32_entry:
         j = bskybase32_lookup (i)
-        print (i,j)
+
         byte_string += j
 
-    print (byte_string)
+
     fixed_string = check_padding (byte_string)
-    print (fixed_string)
+
     return fixed_string
 
 def check_padding (byte_string2check):
@@ -74,7 +74,7 @@ def check_padding (byte_string2check):
 
     '''
     
-    print (len(byte_string2check))
+
     if (len(byte_string2check))==STRING_LEN:
         # all good, return as is
         return byte_string2check
@@ -146,12 +146,11 @@ def bskybase32_lookup (integer2map):
 
 class bsky_tid_obj:
     '''
-    Blue Sky - ATProto TID Generator
-    spec: https://atproto.com/specs/record-key#record-key-type-tid
+    Blue Sky - ATProto TID Generator spec:
+    https://atproto.com/specs/record-key#record-key-type-tid
 
     Generate unique record id for bluesky posts, following
     more restrictive TID (time stamp identifier) format
-    
     '''
 
     # Setup constants
@@ -160,24 +159,75 @@ class bsky_tid_obj:
     MAXY_MASK_64b = (2**63) 
     FINAL_STRING_LENGTH = 13
     FIRST_BIT = 0b0
-    EPOCH_MAX = (2**53)  # Max value for epoch as microseconds since UNIX epoch
-    RANDO_MAX = (2**10) -1   # Max value for random part appended to Epoch/time 53 bits
+
+    # Max value for epoch as microseconds since UNIX epoch
+    EPOCH_MAX = (2**53)
+    
+    # Max value for random part appended to Epoch/time 53 bits
+    RANDO_MAX = (2**10) -1   
     RANDO_MASK_10b = (2**9)  # 512
 
     # Setup class-wide variables
     obj_seq = 0
+    tinytics=0
+    tinytics_man=4
+    epoch_fracSeconds = 0
+    
+    
     
     def __init__(self):
-        '''
-        '''
-        
-        
-    
-    def print_max(self):
-        epoch_fracSeconds = time.time()
-        epoch_uSeconds = math.trunc (time.time() * (10**6))
 
-        # Counter to prevent generating multiple identical ids in the same microsecond
+        '''
+        Standard init for now; might need to put some variables
+        here (counter?)
+        '''
+        self.epoch_fracSeconds = time.time() # grab systemtime at init
+        #print (epoch_fracSeconds = time.time())
+
+    
+    def time_update(self):
+        self.epoch_fracSeconds = time.time() # update from systime
+        print ("test: ", self.epoch_fracSeconds)
+        return
+    
+        
+    @classmethod
+    def class_debug (cls):
+        print ('class debug')
+        print ('class info: ', cls)
+        print (cls.tinytics, cls.tinytics_man)
+        print (bsky_tid_obj)
+        return
+
+    def method(self):
+        print ('Instance Debug')
+        print ('time: ', self.epoch_fracSeconds)
+        print (self)
+        return 
+
+    def print_time_info(self):
+        print("Time Generated is: ",self.tid_generate())
+        return
+    
+    @staticmethod
+    def staticmethod():
+        print ('static method')
+        return
+    
+    def instance_debug(self):
+        print ('Time now: ', self.epoch_fracSeconds)
+        return
+        
+    def tid_generate(self):
+        
+        #epoch_uSeconds = math.trunc (time.time() * (10**6))
+        epoch_uSeconds = math.trunc (self.epoch_fracSeconds * (10**6))
+
+        '''
+        Counter to prevent generating multiple identical ids in
+        the same microsecond.
+        Rollover at 10. Probably not needed.
+        '''
         
         self.obj_seq = self.obj_seq +1
         if self.obj_seq == 10:
@@ -185,12 +235,12 @@ class bsky_tid_obj:
             
         bit_test = self.MAXY_MASK_64b | epoch_uSeconds
 
-        sbit_test = bit_test ^ self.MAXY_MASK_64b
+        # sbit_test = bit_test ^ self.MAXY_MASK_64b
 
 
         # Generate some more info for unique id
         
-        u_time_one = epoch_fracSeconds
+        u_time_one = self.epoch_fracSeconds
         u_time_two = time.time()
         delta_tics = u_time_two - u_time_one
         tinytics=math.frexp(u_time_two - u_time_one)
@@ -201,42 +251,49 @@ class bsky_tid_obj:
 
         q = [tinytics_man[0],tinytics_man[1]]
 
-        # 
-        print (tinytics, tinytics_man)
-        print ()
-        print (p,q)
+        
+        
+        # print ()
+        # print (p,q)
 
         dist = math.trunc(math.dist(p,q))
-        print (dist)
-        print (dist.bit_length())
-        print (delta_tics)
-
+        # print (dist)
+        # print (dist.bit_length())
+        # print ('delta tics: ', delta_tics)
+        # print ('obj seq: ', self.obj_seq)
+        
         # Build a rando number less than 1024
         num_1 = self.obj_seq * 95
         num_2 = dist
         num_3 = num_1 + num_2
-        print (num_3)
+        # print (num_3)
         rando_bits =  self.RANDO_MASK_10b | num_3
-        print("Rando Bits:" , bin(rando_bits))
-        print ("Rando Bits length: ", rando_bits.bit_length())
-        print (self.RANDO_MAX)
-        print (self.RANDO_MAX.bit_length())
-        print (bin(self.RANDO_MAX))
+        # print("Rando Bits:" , bin(rando_bits))
+        # print ("Rando Bits length: ", rando_bits.bit_length())
+        # print (self.RANDO_MAX)
+        # print (self.RANDO_MAX.bit_length())
+        # print (bin(self.RANDO_MAX))
         woffy = 0b1000000000
-        print ("woofy: ", woffy)
-        print ("woofy bit length: ", woffy.bit_length())
+        # print ("woofy: ", woffy)
+        # print ("woofy bit length: ", woffy.bit_length())
         append_rando = self.MAXY_MASK_64b | rando_bits
-        print ("append rando: ", bin(append_rando))
+        # print ("append rando: ", bin(append_rando))
         add_timo = append_rando | bit_test
-        print ("timeo :" , bin(add_timo))
-        print ("timeo bit length: ", add_timo.bit_length())
+        # print ("timeo :" , bin(add_timo))
+        # print ("timeo bit length: ", add_timo.bit_length())
 
         flip_off_leadingbit = add_timo  ^ self.MAXY_MASK_64b
+        interim_result_int = flip_off_leadingbit # checks?
         print ("final: ", bin (flip_off_leadingbit), flip_off_leadingbit)
-        print (flip_off_leadingbit.bit_length())
-        print (epoch_uSeconds)
+        # print (flip_off_leadingbit.bit_length())
+        # print (epoch_uSeconds)
 
-        return
+        # run through coding function
+
+        # update time stamp
+        self.time_update()
+        return interim_result_int
+    
     
 
 
