@@ -10,19 +10,12 @@ print (thingo)
 
 test_tid_int = bsky_tid_obj()
 test_tid_int.print_time_info()
-test_tid_int.instance_debug()
-bsky_tid_obj.class_debug()
-bsky_tid_obj.staticmethod()
-test_tid_int.time_update()
-test_tid_int.time_update()
-test_tid_int.tid_generate()
-test_tid_int.tid_generate()
-test_tid_int.tid_generate()
-test_tid_int.tid_generate()
+test_tid_int.print_time_info()
+test_tid_int.print_time_info()
+test_tid_int.print_time_info()
+test_tid_int.print_time_info()
 
-test2_tid_int = bsky_tid_obj()
-test2_tid_int.instance_debug()
-test2_tid_int.tid_generate()
+
 
 
 

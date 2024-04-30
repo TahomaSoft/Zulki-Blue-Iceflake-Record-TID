@@ -156,7 +156,7 @@ class bsky_tid_obj:
     # Setup constants
 
     MAX_TID = (2**63)
-    MAXY_MASK_64b = (2**63) 
+    FULL_MASK_64b = (2**63) 
     FINAL_STRING_LENGTH = 13
     FIRST_BIT = 0b0
 
@@ -187,7 +187,7 @@ class bsky_tid_obj:
     
     def time_update(self):
         self.epoch_fracSeconds = time.time() # update from systime
-        print ("test: ", self.epoch_fracSeconds)
+        # print ("test: ", self.epoch_fracSeconds)
         return
     
         
@@ -210,7 +210,7 @@ class bsky_tid_obj:
         return
     
     @staticmethod
-    def staticmethod():
+    def static_test_method():
         print ('static method')
         return
     
@@ -220,8 +220,13 @@ class bsky_tid_obj:
         
     def tid_generate(self):
         
-        #epoch_uSeconds = math.trunc (time.time() * (10**6))
-        epoch_uSeconds = math.trunc (self.epoch_fracSeconds * (10**6))
+        # epoch_uSeconds = math.trunc (time.time() * (10**7))
+        # Deci-microseconds since unix epoch 
+        # Second factor of 10 is to pad out time a bit
+        # Started with 10 **6 factor, but rando part was clobbering it
+        # So extended to 10 ** 7
+        # Safe to probably go to 10 ** 8
+        epoch_deci_uSeconds = math.trunc (self.epoch_fracSeconds * (10**7)) 
 
         '''
         Counter to prevent generating multiple identical ids in
@@ -233,12 +238,18 @@ class bsky_tid_obj:
         if self.obj_seq == 10:
             self.obj_seq =0
             
-        bit_test = self.MAXY_MASK_64b | epoch_uSeconds
-
-        # sbit_test = bit_test ^ self.MAXY_MASK_64b
+        # bit_make_rando = self.MAXY_MASK_64b | epoch_deci_uSeconds
+        bit_make_rando = self.RANDO_MASK_10b | epoch_deci_uSeconds
 
 
         # Generate some more info for unique id
+        # This part could use more thought and work
+        # Especially to generalize more under
+        # Concurrency strategies and situations
+        # A Euclidian distance between two time samples is generated and appended
+        # To the sequence number to provide more variablity
+        # Could be simplified or eliminated in most scenarios
+        # Might be helpful in currency situation with some addendums
         
         u_time_one = self.epoch_fracSeconds
         u_time_two = time.time()
@@ -247,52 +258,39 @@ class bsky_tid_obj:
 
         p = [tinytics[0],tinytics[1]]
 
-        tinytics_man = math.frexp(tinytics[0])
+        tinytics_man = math.frexp(tinytics[0]) # man for mantissa
 
         q = [tinytics_man[0],tinytics_man[1]]
 
-        
-        
-        # print ()
-        # print (p,q)
-
         dist = math.trunc(math.dist(p,q))
-        # print (dist)
-        # print (dist.bit_length())
-        # print ('delta tics: ', delta_tics)
-        # print ('obj seq: ', self.obj_seq)
-        
+
+                
         # Build a rando number less than 1024
-        num_1 = self.obj_seq * 95
+        num_1 = self.obj_seq * 100
         num_2 = dist
         num_3 = num_1 + num_2
-        # print (num_3)
-        rando_bits =  self.RANDO_MASK_10b | num_3
-        # print("Rando Bits:" , bin(rando_bits))
-        # print ("Rando Bits length: ", rando_bits.bit_length())
-        # print (self.RANDO_MAX)
-        # print (self.RANDO_MAX.bit_length())
-        # print (bin(self.RANDO_MAX))
-        woffy = 0b1000000000
-        # print ("woofy: ", woffy)
-        # print ("woofy bit length: ", woffy.bit_length())
-        append_rando = self.MAXY_MASK_64b | rando_bits
-        # print ("append rando: ", bin(append_rando))
-        add_timo = append_rando | bit_test
-        # print ("timeo :" , bin(add_timo))
-        # print ("timeo bit length: ", add_timo.bit_length())
 
-        flip_off_leadingbit = add_timo  ^ self.MAXY_MASK_64b
+        # Prepare to append to the main number
+        rando_bits =  self.RANDO_MASK_10b | num_3
+
+        append_rando = self.FULL_MASK_64b | rando_bits
+
+        add_timo = append_rando | bit_make_rando
+
+        # Mask back off the first of 64 bits
+        
+        flip_off_leadingbit = add_timo  ^ self.FULL_MASK_64b
         interim_result_int = flip_off_leadingbit # checks?
-        print ("final: ", bin (flip_off_leadingbit), flip_off_leadingbit)
-        # print (flip_off_leadingbit.bit_length())
-        # print (epoch_uSeconds)
 
         # run through coding function
 
         # update time stamp
+        print ('epoch_deci_microSeconds: ', epoch_deci_uSeconds)
+        print ('interim result: ', interim_result_int)
+        print ('len interim result: ', interim_result_int.bit_length())
+        result = bsky_convert2_b32(interim_result_int)
         self.time_update()
-        return interim_result_int
+        return result
     
     
 
