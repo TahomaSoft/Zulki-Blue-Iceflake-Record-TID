@@ -13,5 +13,8 @@ https://atproto.com/specs/record-key
 An attempt in python to properly create a valid record key under the
 TID (Time ID) rubrick for atproto and Bluesky Social.
 
+Full package name: Zulki-Blue-Iceflake-Record-TID
+Shorter name: ZulkiBlueFlake
+
 
 
