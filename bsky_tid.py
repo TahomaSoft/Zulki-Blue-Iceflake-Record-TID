@@ -285,9 +285,9 @@ class bsky_tid_obj:
         # run through coding function
 
         # update time stamp
-        print ('epoch_deci_microSeconds: ', epoch_deci_uSeconds)
-        print ('interim result: ', interim_result_int)
-        print ('len interim result: ', interim_result_int.bit_length())
+        # print ('epoch_deci_microSeconds: ', epoch_deci_uSeconds)
+        # print ('interim result: ', interim_result_int)
+        # print ('len interim result: ', interim_result_int.bit_length())
         result = bsky_convert2_b32(interim_result_int)
         self.time_update()
         return result
